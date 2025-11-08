@@ -1,28 +1,22 @@
 import { motion } from 'framer-motion';
 import { Mail, Star, Medal, Trophy, Github, Linkedin, Instagram, Music } from 'lucide-react';
-import emailjs from '@emailjs/browser';
 import { useRef, useState } from 'react';
 
 export default function AchievementsContact() {
   const formRef = useRef(null);
-  const [sent, setSent] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
 
-  const sendEmail = async (e) => {
+  const handleNativeEmail = (e) => {
     e.preventDefault();
-    try {
-      // Replace with your EmailJS service/template/public key in env if configured.
-      await emailjs.sendForm(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-        formRef.current,
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-      );
-      setSent(true);
-    } catch (err) {
-      console.error(err);
-      alert('Unable to send right now. Please email sanketh21@GMAIL.com');
-    }
+    const form = formRef.current;
+    const name = encodeURIComponent(form.from_name.value.trim());
+    const email = encodeURIComponent(form.reply_to.value.trim());
+    const message = encodeURIComponent(form.message.value.trim());
+
+    const subject = `Portfolio contact from ${name}`;
+    const body = `Name: ${name}%0AEmail: ${email}%0A%0A${message}`;
+
+    window.location.href = `mailto:sanketh21@GMAIL.com?subject=${subject}&body=${body}`;
   };
 
   return (
@@ -59,13 +53,15 @@ export default function AchievementsContact() {
         <div id="contact" className="mt-20 grid lg:grid-cols-2 gap-8 items-start">
           <div className="p-6 rounded-2xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Contact</h3>
-            <p className="mt-2 text-gray-700 dark:text-gray-300">Email: <a className="underline" href="mailto:sanketh21@GMAIL.com">sanketh21@GMAIL.com</a></p>
-            <form ref={formRef} onSubmit={sendEmail} className="mt-6 space-y-3">
+            <p className="mt-2 text-gray-700 dark:text-gray-300">
+              Email: <a className="underline" href="mailto:sanketh21@GMAIL.com">sanketh21@GMAIL.com</a>
+            </p>
+            <form ref={formRef} onSubmit={handleNativeEmail} className="mt-6 space-y-3">
               <input name="from_name" required placeholder="Your name" className="w-full px-4 py-2 rounded-lg bg-white/60 dark:bg-white/10 border border-black/5 dark:border-white/10 outline-none focus:ring-2 ring-blue-500" />
               <input type="email" name="reply_to" required placeholder="Your email" className="w-full px-4 py-2 rounded-lg bg-white/60 dark:bg-white/10 border border-black/5 dark:border-white/10 outline-none focus:ring-2 ring-blue-500" />
               <textarea name="message" required placeholder="Message" rows="4" className="w-full px-4 py-2 rounded-lg bg-white/60 dark:bg-white/10 border border-black/5 dark:border-white/10 outline-none focus:ring-2 ring-blue-500" />
               <button type="submit" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg hover:shadow-blue-600/40 transition">
-                <Mail size={18} /> {sent ? 'Sent!' : 'Send Message'}
+                <Mail size={18} /> Send Message
               </button>
             </form>
           </div>
